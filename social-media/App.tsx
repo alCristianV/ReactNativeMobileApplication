@@ -1,15 +1,26 @@
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import LandingScreen from "./src/auth/Landing";
+import LandingScreen from "./src/components/auth/Landing";
 import { navigantion } from "./src/constants/navigation";
 
 import * as firebaseApp from "firebase/app";
 import { firebaseConfig } from "./src/constants/firebaseConfig";
 import { getAuth } from "firebase/auth";
-import RegisterScreen from "./src/auth/Register";
+import RegisterScreen from "./src/components/auth/Register";
 import { useEffect, useState } from "react";
 import { View, Text } from "react-native";
-import LoginScreen from "./src/auth/Login";
+import LoginScreen from "./src/components/auth/Login";
+
+import { Provider } from "react-redux";
+import { configureStore } from "@reduxjs/toolkit";
+import { applyMiddleware } from "redux";
+import thunk from "redux-thunk";
+import rootReducer from "./src/redux/reducers";
+
+const store = configureStore({
+  rootReducer,
+  middleware: applyMiddleware(thunk),
+});
 
 if (firebaseApp.getApps().length === 0) {
   firebaseApp.initializeApp(firebaseConfig);
