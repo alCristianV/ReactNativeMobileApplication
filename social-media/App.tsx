@@ -12,15 +12,8 @@ import { View, Text } from "react-native";
 import LoginScreen from "./src/components/auth/Login";
 
 import { Provider } from "react-redux";
-import { configureStore } from "@reduxjs/toolkit";
-import { applyMiddleware } from "redux";
-import thunk from "redux-thunk";
-import rootReducer from "./src/redux/reducers";
-
-const store = configureStore({
-  rootReducer,
-  middleware: applyMiddleware(thunk),
-});
+import Main from "./src/components/Main";
+import store from "./src/redux/store/store";
 
 if (firebaseApp.getApps().length === 0) {
   firebaseApp.initializeApp(firebaseConfig);
@@ -69,8 +62,8 @@ export default function App() {
   }
 
   return (
-    <View style={{ flex: 1, justifyContent: "center" }}>
-      <Text>User is logged in</Text>
-    </View>
+    <Provider store={store}>
+      <Main />
+    </Provider>
   );
 }
