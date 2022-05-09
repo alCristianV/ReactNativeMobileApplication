@@ -1,19 +1,20 @@
-import { NavigationContainer } from "@react-navigation/native";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import LandingScreen from "./src/components/auth/Landing";
-import { navigantion } from "./src/constants/navigation";
+import * as firebaseApp from 'firebase/app';
+import { getAuth } from 'firebase/auth';
+import { useEffect, useState } from 'react';
+import { Text, View } from 'react-native';
+import { Provider } from 'react-redux';
 
-import * as firebaseApp from "firebase/app";
-import { firebaseConfig } from "./src/constants/firebaseConfig";
-import { getAuth } from "firebase/auth";
-import RegisterScreen from "./src/components/auth/Register";
-import { useEffect, useState } from "react";
-import { View, Text } from "react-native";
-import LoginScreen from "./src/components/auth/Login";
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import { Provider } from "react-redux";
-import Main from "./src/components/Main";
-import store from "./src/redux/store/store";
+import LandingScreen from './src/components/auth/Landing';
+import LoginScreen from './src/components/auth/Login';
+import RegisterScreen from './src/components/auth/Register';
+import AddScreen from './src/components/main/Add';
+import MainScreen from './src/components/main/Main';
+import { firebaseConfig } from './src/constants/firebaseConfig';
+import { navigantion } from './src/constants/navigation';
+import store from './src/redux/store/store';
 
 if (firebaseApp.getApps().length === 0) {
   firebaseApp.initializeApp(firebaseConfig);
@@ -63,7 +64,16 @@ export default function App() {
 
   return (
     <Provider store={store}>
-      <Main />
+      <NavigationContainer>
+        <Stack.Navigator initialRouteName={navigantion.MAIN}>
+          <Stack.Screen
+            name={navigantion.MAIN}
+            component={MainScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen name={navigantion.ADD} component={AddScreen} />
+        </Stack.Navigator>
+      </NavigationContainer>
     </Provider>
   );
 }

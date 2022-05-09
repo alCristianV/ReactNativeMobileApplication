@@ -3,7 +3,7 @@ import { Button, TextInput, View } from "react-native";
 import { placeholders } from "../../constants/placeholders";
 import { titles } from "../../constants/titles";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
-import { getFirestore, doc, setDoc } from "firebase/firestore";
+import { setDoc } from "firebase/firestore";
 import { getUsersDoc } from "../../utils/getUsersDoc";
 
 export default function RegisterScreen() {
@@ -12,8 +12,7 @@ export default function RegisterScreen() {
   const [password, setPassword] = useState("");
 
   const onSignUp = () => {
-    const auth = getAuth();
-    createUserWithEmailAndPassword(auth, email, password)
+    createUserWithEmailAndPassword(getAuth(), email, password)
       .then((userCredential) => {
         const usersRef = getUsersDoc();
         setDoc(usersRef, { name, email });
