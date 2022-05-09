@@ -12,8 +12,9 @@ import LoginScreen from './src/components/auth/Login';
 import RegisterScreen from './src/components/auth/Register';
 import AddScreen from './src/components/main/Add';
 import MainScreen from './src/components/main/Main';
+import SaveScreen from './src/components/main/Save';
 import { firebaseConfig } from './src/constants/firebaseConfig';
-import { navigantion } from './src/constants/navigation';
+import { navigationConst } from './src/constants/navigation';
 import store from './src/redux/store/store';
 
 if (firebaseApp.getApps().length === 0) {
@@ -46,17 +47,17 @@ export default function App() {
   if (!loggedIn) {
     return (
       <NavigationContainer>
-        <Stack.Navigator initialRouteName={navigantion.LANDING}>
+        <Stack.Navigator initialRouteName={navigationConst.LANDING}>
           <Stack.Screen
-            name={navigantion.LANDING}
+            name={navigationConst.LANDING}
             component={LandingScreen}
             options={{ headerShown: false }}
           />
           <Stack.Screen
-            name={navigantion.REGISTER}
+            name={navigationConst.REGISTER}
             component={RegisterScreen}
           />
-          <Stack.Screen name={navigantion.LOGIN} component={LoginScreen} />
+          <Stack.Screen name={navigationConst.LOGIN} component={LoginScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     );
@@ -65,13 +66,14 @@ export default function App() {
   return (
     <Provider store={store}>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName={navigantion.MAIN}>
+        <Stack.Navigator initialRouteName={navigationConst.MAIN}>
           <Stack.Screen
-            name={navigantion.MAIN}
+            name={navigationConst.MAIN}
             component={MainScreen}
             options={{ headerShown: false }}
           />
-          <Stack.Screen name={navigantion.ADD} component={AddScreen} />
+          <Stack.Screen name={navigationConst.ADD} component={AddScreen} />
+          <Stack.Screen name={navigationConst.SAVE} component={SaveScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </Provider>

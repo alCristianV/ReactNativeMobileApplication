@@ -1,10 +1,11 @@
-import React, { useState } from "react";
-import { Button, TextInput, View } from "react-native";
-import { placeholders } from "../../constants/placeholders";
-import { titles } from "../../constants/titles";
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
-import { setDoc } from "firebase/firestore";
-import { getUsersDoc } from "../../utils/getUsersDoc";
+import { createUserWithEmailAndPassword, getAuth } from 'firebase/auth';
+import { setDoc } from 'firebase/firestore';
+import React, { useState } from 'react';
+import { Button, TextInput, View } from 'react-native';
+
+import { placeholders } from '../../constants/placeholders';
+import { titles } from '../../constants/titles';
+import { getUsersDoc } from '../../utils/getUsersDoc';
 
 export default function RegisterScreen() {
   const [name, setName] = useState("");
@@ -13,9 +14,9 @@ export default function RegisterScreen() {
 
   const onSignUp = () => {
     createUserWithEmailAndPassword(getAuth(), email, password)
-      .then((userCredential) => {
+      .then(async (userCredential) => {
         const usersRef = getUsersDoc();
-        setDoc(usersRef, { name, email });
+        await setDoc(usersRef, { name, email });
         console.log(userCredential);
       })
       .catch((error) => {

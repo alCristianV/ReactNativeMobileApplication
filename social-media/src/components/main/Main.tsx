@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 
 import { icons } from '../../constants/icons';
-import { navigantion } from '../../constants/navigation';
+import { navigationConst } from '../../constants/navigation';
 import { titles } from '../../constants/titles';
 import { values } from '../../constants/values';
 import { getUser } from '../../redux/slices/userSlice';
@@ -28,9 +28,9 @@ export default function Main() {
   }, []);
 
   return (
-    <Tab.Navigator initialRouteName={navigantion.FEED} labeled={false}>
+    <Tab.Navigator initialRouteName={navigationConst.FEED} labeled={false}>
       <Tab.Screen
-        name={navigantion.FEED}
+        name={navigationConst.FEED}
         component={FeedScreen}
         options={{
           tabBarIcon: ({ color }) => (
@@ -43,12 +43,12 @@ export default function Main() {
         }}
       />
       <Tab.Screen
-        name={navigantion.ADD_CONTAINER}
+        name={navigationConst.ADD_CONTAINER}
         component={EmptyScreen}
         listeners={({ navigation }) => ({
           tabPress: (event) => {
             event.preventDefault();
-            navigation.navigate(navigantion.ADD);
+            navigation.navigate(navigationConst.ADD);
           },
         })}
         options={{
@@ -62,7 +62,7 @@ export default function Main() {
         }}
       />
       <Tab.Screen
-        name={navigantion.PROFILE}
+        name={navigationConst.PROFILE}
         component={ProfileScreen}
         options={{
           tabBarIcon: ({ color }) => (

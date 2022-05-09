@@ -1,4 +1,4 @@
-export const navigantion = {
+export const navigationConst = {
   REGISTER: "Register",
   LOGIN: "Login",
   LANDING: "Landing",
@@ -7,4 +7,5 @@ export const navigantion = {
   ADD: "Add",
   ADD_CONTAINER: "AddContainer",
   PROFILE: "Profile",
+  SAVE: "Save",
 };
