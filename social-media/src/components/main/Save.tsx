@@ -1,5 +1,5 @@
 import { getAuth } from 'firebase/auth';
-import { doc, getFirestore, serverTimestamp, setDoc } from 'firebase/firestore';
+import { addDoc, collection, doc, getFirestore, serverTimestamp, setDoc } from 'firebase/firestore';
 import { getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
 import React, { useState } from 'react';
 import { Button, Image, Text, TextInput, View } from 'react-native';
@@ -25,23 +25,25 @@ export default function Save(props: any) {
     uploadBytes(storageRef, blob).then((snapshot) => {
       getDownloadURL(snapshot.ref).then((url) => {
         console.log(url);
-        //savePostData(url);
+        savePostData(url);
       });
     });
   };
 
   const savePostData = (downloadURL: string) => {
-    const postsDocRef = doc(
-      getFirestore(),
-      "posts",
-      getAuth().currentUser?.uid as string,
-      "userPosts"
-    );
-    setDoc(postsDocRef, {
-      downloadURL,
-      caption,
-      creation: serverTimestamp(),
-    }).then(() => navigation.dispatch(StackActions.popToTop()));
+    addDoc(
+      collection(
+        getFirestore(),
+        "posts",
+        getAuth().currentUser?.uid as string,
+        "userPosts"
+      ),
+      {
+        downloadURL,
+        caption,
+        creation: serverTimestamp(),
+      }
+    ).then(() => navigation.dispatch(StackActions.popToTop()));
   };
   return (
     <View style={{ flex: 1 }}>

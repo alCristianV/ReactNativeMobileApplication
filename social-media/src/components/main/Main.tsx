@@ -9,7 +9,7 @@ import { icons } from '../../constants/icons';
 import { navigationConst } from '../../constants/navigation';
 import { titles } from '../../constants/titles';
 import { values } from '../../constants/values';
-import { getUser } from '../../redux/slices/userSlice';
+import { fetchUser, fetchUserPosts } from '../../redux/slices/userSlice';
 import FeedScreen from './Feed';
 import ProfileScreen from './Profile';
 
@@ -24,7 +24,9 @@ export default function Main() {
   const userState = useSelector((state: any) => state.user);
 
   useEffect(() => {
-    dispatch(getUser() as any);
+    console.log("Main");
+    //dispatch(fetchUser() as any);
+    dispatch(fetchUserPosts() as any);
   }, []);
 
   return (
