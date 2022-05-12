@@ -25,7 +25,7 @@ export default function Main() {
 
   useEffect(() => {
     console.log("Main");
-    //dispatch(fetchUser() as any);
+    dispatch(fetchUser() as any);
     dispatch(fetchUserPosts() as any);
   }, []);
 

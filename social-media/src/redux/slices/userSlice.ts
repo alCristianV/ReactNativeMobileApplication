@@ -17,15 +17,20 @@ export const fetchUser = createAsyncThunk("fetchUser", async () => {
 });
 
 export const fetchUserPosts = createAsyncThunk("fetchUserPosts", async () => {
-  console.log("fetchUserPosts");
-  console.log(getUsersPostsDoc());
   const usersPostsCollectionRef = getUsersPostsDoc();
-  console.log("fetchUserPosts2");
   const usersPostsDocsSnap = await getDocs(usersPostsCollectionRef);
-  console.log("fetchUserPosts3");
+  const docs: any = [];
+  console.log(usersPostsDocsSnap);
   usersPostsDocsSnap.forEach((doc) => {
     console.log(doc.id, " => ", doc.data());
+    docs.push({
+      id: doc.id,
+      caption: doc.data().caption,
+      downloadUrl: doc.data().downloadURL,
+      creationSeconds: doc.data().creation.seconds,
+    });
   });
+  return docs;
 });
 
 const userSlice = createSlice({
@@ -47,7 +52,7 @@ const userSlice = createSlice({
       }),
       builder.addCase(fetchUserPosts.pending, (state) => {
         console.log("peending");
-        //state.status = "loading";
+        state.status = "loading";
       }),
       builder.addCase(fetchUserPosts.fulfilled, (state, { payload }) => {
         state.status = "success";
