@@ -7,7 +7,6 @@ import { createMaterialBottomTabNavigator } from '@react-navigation/material-bot
 
 import { icons } from '../../constants/icons';
 import { navigationConst } from '../../constants/navigation';
-import { titles } from '../../constants/titles';
 import { values } from '../../constants/values';
 import { fetchUser, fetchUserPosts } from '../../redux/slices/userSlice';
 import FeedScreen from './Feed';
@@ -20,15 +19,6 @@ const EmptyScreen = () => {
 const Tab = createMaterialBottomTabNavigator();
 
 export default function Main() {
-  const dispatch = useDispatch();
-  const userState = useSelector((state: any) => state.user);
-
-  useEffect(() => {
-    console.log("Main");
-    dispatch(fetchUser() as any);
-    dispatch(fetchUserPosts() as any);
-  }, []);
-
   return (
     <Tab.Navigator initialRouteName={navigationConst.FEED} labeled={false}>
       <Tab.Screen
