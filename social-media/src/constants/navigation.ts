@@ -8,4 +8,5 @@ export const navigationConst = {
   ADD_CONTAINER: "AddContainer",
   PROFILE: "Profile",
   SAVE: "Save",
+  SEARCH: "Search",
 };

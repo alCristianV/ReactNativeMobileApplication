@@ -1,37 +1,43 @@
-import { getDoc, getDocs } from 'firebase/firestore';
+import { getDoc, getDocs, onSnapshot } from 'firebase/firestore';
 
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
 import { getUsersDoc } from '../../utils/getUsersDoc';
 import { getUsersPostsDoc } from '../../utils/getUsersPostsDoc';
 
-export const fetchUser = createAsyncThunk("fetchUser", async () => {
-  const usersDocRef = getUsersDoc();
-  const usersDocSnap = await getDoc(usersDocRef);
+export const fetchUser = createAsyncThunk(
+  "fetchUser",
+  async (userId: string) => {
+    const usersDocRef = getUsersDoc(userId);
+    const usersDocSnap = await getDoc(usersDocRef);
 
-  if (usersDocSnap.exists()) {
-    return usersDocSnap.data();
-  } else {
-    console.log("Does not exist");
+    if (usersDocSnap.exists()) {
+      return usersDocSnap.data();
+    } else {
+      console.log("Does not exist");
+    }
   }
-});
+);
 
-export const fetchUserPosts = createAsyncThunk("fetchUserPosts", async () => {
-  const usersPostsCollectionRef = getUsersPostsDoc();
-  const usersPostsDocsSnap = await getDocs(usersPostsCollectionRef);
-  const docs: any = [];
-  console.log(usersPostsDocsSnap);
-  usersPostsDocsSnap.forEach((doc) => {
-    console.log(doc.id, " => ", doc.data());
-    docs.push({
-      id: doc.id,
-      caption: doc.data().caption,
-      downloadUrl: doc.data().downloadURL,
-      creationSeconds: doc.data().creation.seconds,
+export const fetchUserPosts = createAsyncThunk(
+  "fetchUserPosts",
+  async (userId: string) => {
+    const usersPostsCollectionRef = getUsersPostsDoc(userId);
+    const usersPostsDocsSnap = await getDocs(usersPostsCollectionRef);
+    const docs: any = [];
+    console.log(usersPostsDocsSnap);
+    usersPostsDocsSnap.forEach((doc) => {
+      console.log(doc.id, " => ", doc.data());
+      docs.push({
+        id: doc.id,
+        caption: doc.data().caption,
+        downloadUrl: doc.data().downloadURL,
+        creationSeconds: doc.data().creation.seconds,
+      });
     });
-  });
-  return docs;
-});
+    return docs;
+  }
+);
 
 const userSlice = createSlice({
   name: "user",
@@ -39,6 +45,7 @@ const userSlice = createSlice({
     user: null,
     posts: [],
     status: "",
+    following: [],
   },
   reducers: {},
   extraReducers: (builder) => {

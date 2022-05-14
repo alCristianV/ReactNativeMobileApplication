@@ -1,7 +1,6 @@
-import { getAuth } from "firebase/auth";
-import { getFirestore, doc } from "firebase/firestore";
+import { getAuth } from 'firebase/auth';
+import { doc, getFirestore } from 'firebase/firestore';
 
-export const getUsersDoc = () => {
-  console.log(getAuth().currentUser?.uid);
-  return doc(getFirestore(), "users", getAuth().currentUser?.uid as string);
+export const getUsersDoc = (userId: string) => {
+  return doc(getFirestore(), "users", userId);
 };

@@ -1,3 +1,4 @@
+import { getAuth } from 'firebase/auth';
 import React, { useEffect } from 'react';
 import { Text, View } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -11,6 +12,7 @@ import { values } from '../../constants/values';
 import { fetchUser, fetchUserPosts } from '../../redux/slices/userSlice';
 import FeedScreen from './Feed';
 import ProfileScreen from './Profile';
+import SearchScreen from './Search';
 
 const EmptyScreen = () => {
   return null;
@@ -28,6 +30,19 @@ export default function Main() {
           tabBarIcon: ({ color }) => (
             <MaterialCommunityIcons
               name={icons.HOME}
+              color={color}
+              size={values.ICON_SIZE}
+            />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name={navigationConst.SEARCH}
+        component={SearchScreen}
+        options={{
+          tabBarIcon: ({ color }) => (
+            <MaterialCommunityIcons
+              name={icons.SEARCH}
               color={color}
               size={values.ICON_SIZE}
             />
@@ -56,6 +71,14 @@ export default function Main() {
       <Tab.Screen
         name={navigationConst.PROFILE}
         component={ProfileScreen}
+        listeners={({ navigation }) => ({
+          tabPress: (event) => {
+            event.preventDefault();
+            navigation.navigate(navigationConst.PROFILE, {
+              uid: getAuth().currentUser?.uid as string,
+            });
+          },
+        })}
         options={{
           tabBarIcon: ({ color }) => (
             <MaterialCommunityIcons

@@ -67,11 +67,7 @@ export default function App() {
     <Provider store={store}>
       <NavigationContainer>
         <Stack.Navigator initialRouteName={navigationConst.MAIN}>
-          <Stack.Screen
-            name={navigationConst.MAIN}
-            component={MainScreen}
-            options={{ headerShown: false }}
-          />
+          <Stack.Screen name={navigationConst.MAIN} component={MainScreen} />
           <Stack.Screen name={navigationConst.ADD} component={AddScreen} />
           <Stack.Screen name={navigationConst.SAVE} component={SaveScreen} />
         </Stack.Navigator>
