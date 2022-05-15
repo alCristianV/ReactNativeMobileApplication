@@ -1,15 +1,12 @@
 import { getAuth } from 'firebase/auth';
-import React, { useEffect } from 'react';
-import { Text, View } from 'react-native';
+import React from 'react';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { useDispatch, useSelector } from 'react-redux';
 
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 
 import { icons } from '../../constants/icons';
 import { navigationConst } from '../../constants/navigation';
 import { values } from '../../constants/values';
-import { fetchUser, fetchUserPosts } from '../../redux/slices/userSlice';
 import FeedScreen from './Feed';
 import ProfileScreen from './Profile';
 import SearchScreen from './Search';

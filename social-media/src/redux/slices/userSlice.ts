@@ -1,43 +1,96 @@
+import { getAuth } from 'firebase/auth';
 import { getDoc, getDocs, onSnapshot } from 'firebase/firestore';
 
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
 import { getUsersDoc } from '../../utils/getUsersDoc';
+import { getUsersFollowingDoc } from '../../utils/getUsersFollowingDoc';
 import { getUsersPostsDoc } from '../../utils/getUsersPostsDoc';
 
 export const fetchUser = createAsyncThunk(
   "fetchUser",
   async (userId: string) => {
-    const usersDocRef = getUsersDoc(userId);
-    const usersDocSnap = await getDoc(usersDocRef);
-
-    if (usersDocSnap.exists()) {
-      return usersDocSnap.data();
-    } else {
-      console.log("Does not exist");
-    }
+    return await getUserInfo(userId);
   }
 );
+
+const getUserInfo = async (userId: string) => {
+  const usersDocRef = getUsersDoc(userId);
+  const usersDocSnap = await getDoc(usersDocRef);
+
+  if (usersDocSnap.exists()) {
+    return usersDocSnap.data();
+  } else {
+    console.log("Does not exist");
+  }
+};
+
+const getUserPosts = async (userId: string) => {
+  const usersPostsCollectionRef = getUsersPostsDoc(userId);
+  const usersPostsDocsSnap = await getDocs(usersPostsCollectionRef);
+  const posts: any = [];
+  usersPostsDocsSnap.forEach((doc) => {
+    posts.push({
+      id: doc.id,
+      caption: doc.data().caption,
+      downloadUrl: doc.data().downloadURL,
+      creationSeconds: doc.data().creation.seconds,
+    });
+  });
+  return posts;
+};
 
 export const fetchUserPosts = createAsyncThunk(
   "fetchUserPosts",
   async (userId: string) => {
-    const usersPostsCollectionRef = getUsersPostsDoc(userId);
-    const usersPostsDocsSnap = await getDocs(usersPostsCollectionRef);
-    const docs: any = [];
-    console.log(usersPostsDocsSnap);
-    usersPostsDocsSnap.forEach((doc) => {
-      console.log(doc.id, " => ", doc.data());
-      docs.push({
-        id: doc.id,
-        caption: doc.data().caption,
-        downloadUrl: doc.data().downloadURL,
-        creationSeconds: doc.data().creation.seconds,
-      });
-    });
-    return docs;
+    return await getUserPosts(userId);
   }
 );
+
+export const fetchUserFeedPosts = createAsyncThunk(
+  "fetchUserFeedPosts",
+  async () => {
+    const followings = await getUserFollowing();
+    const followedUsers = await Promise.all(
+      followings.map(async (followingId) => {
+        return {
+          followedUserId: followingId,
+          userInfo: await getUserInfo(followingId),
+          posts: await getUserPosts(followingId),
+        };
+      })
+    );
+
+    const followedUsersPosts: any[] = [];
+    followedUsers.forEach((followedUser) => {
+      followedUser.posts.forEach((post: any) => {
+        followedUsersPosts.push({
+          post: post,
+          userInfo: followedUser.userInfo,
+          followedUserId: followedUser.followedUserId,
+        });
+      });
+    });
+    console.log(followedUsersPosts);
+    return followedUsersPosts.sort((x, y) => {
+      return x.post.creation - y.post.creation;
+    });
+  }
+);
+
+const getUserFollowing = async () => {
+  const currentUserId = getAuth().currentUser?.uid as string;
+  const usersFollowingCollectionRef = getUsersFollowingDoc(currentUserId);
+
+  const usersFollowingDocsSnap = await getDocs(usersFollowingCollectionRef);
+  const followings: string[] = [];
+  usersFollowingDocsSnap.forEach(async (userDoc) => {
+    const followedUserId = userDoc.data().userId;
+    followings.push(followedUserId);
+  });
+
+  return followings;
+};
 
 const userSlice = createSlice({
   name: "user",
@@ -45,7 +98,7 @@ const userSlice = createSlice({
     user: null,
     posts: [],
     status: "",
-    following: [],
+    feedPosts: [],
   },
   reducers: {},
   extraReducers: (builder) => {
@@ -65,6 +118,10 @@ const userSlice = createSlice({
         state.status = "success";
         state.posts = payload as any;
         console.log(state.posts);
+      }),
+      builder.addCase(fetchUserFeedPosts.fulfilled, (state, { payload }) => {
+        state.feedPosts = payload as any;
+        console.log(state.feedPosts);
       });
   },
 });

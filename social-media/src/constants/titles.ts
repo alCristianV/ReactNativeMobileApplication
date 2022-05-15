@@ -3,4 +3,5 @@ export const titles = {
   LOGIN_BUTTON: "Login",
   FOLLOWING: "Following",
   FOLLOW: "Follow",
+  REFRESH: "Refresh",
 };

@@ -15,7 +15,7 @@ export default function RegisterScreen() {
   const onSignUp = () => {
     createUserWithEmailAndPassword(getAuth(), email, password)
       .then(async (userCredential) => {
-        const usersRef = getUsersDoc();
+        const usersRef = getUsersDoc(getAuth().currentUser?.uid as string);
         await setDoc(usersRef, { name, email });
         console.log(userCredential);
       })
