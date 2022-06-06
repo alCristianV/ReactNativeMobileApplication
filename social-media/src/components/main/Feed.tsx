@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Button, FlatList, Image, StyleSheet, Text, View } from 'react-native';
+import { Animated, Button, FlatList, Image, StyleSheet, Text, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { titles } from '../../constants/titles';
 import { fetchUserFeedPosts } from '../../redux/slices/userSlice';
+import AnimatedFeedList from './AnimatedFeedList';
 
 export default function Feed() {
   const dispatch = useDispatch();
@@ -50,21 +51,7 @@ export default function Feed() {
   return (
     <View style={styles.container}>
       <View style={styles.containerGallery}>
-        <FlatList
-          numColumns={1}
-          horizontal={false}
-          data={feed}
-          renderItem={({ item }) => (
-            <View>
-              <Text style={styles.container}>{item.userInfo.name}</Text>
-              <Text style={styles.container}>{item.post.caption}</Text>
-              <Image
-                style={styles.image}
-                source={{ uri: item.post.downloadUrl }}
-              />
-            </View>
-          )}
-        />
+        <AnimatedFeedList data={feed}></AnimatedFeedList>
       </View>
       <Button title={titles.REFRESH} onPress={() => fetchUserPosts()} />
     </View>
