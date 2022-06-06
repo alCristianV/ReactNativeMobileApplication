@@ -83,6 +83,10 @@ export default function Profile(props: any) {
     return unsubscribe;
   };
 
+  const onLogout = () => {
+    getAuth().signOut();
+  };
+
   if (user === null) {
     return <View />;
   }
@@ -93,14 +97,16 @@ export default function Profile(props: any) {
         <Text>{user?.name}</Text>
         <Text>{user?.email}</Text>
 
-        {props.route.params.uid !== getAuth().currentUser?.uid && (
+        {props.route.params.uid !== getAuth().currentUser?.uid ? (
           <View>
             {following ? (
-              <Button title={titles.FOLLOWING} onPress={() => onUnfollow()} />
+              <Button title="Following" onPress={() => onUnfollow()} />
             ) : (
-              <Button title={titles.FOLLOW} onPress={() => onFollow()} />
+              <Button title="Follow" onPress={() => onFollow()} />
             )}
           </View>
+        ) : (
+          <Button title="Logout" onPress={() => onLogout()} />
         )}
       </View>
 

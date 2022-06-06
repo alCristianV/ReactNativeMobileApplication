@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, FlatList, Image, StyleSheet, Text, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -7,18 +7,45 @@ import { fetchUserFeedPosts } from '../../redux/slices/userSlice';
 
 export default function Feed() {
   const dispatch = useDispatch();
-  const userFeedPosts = useSelector((state: any) => state.user.feedPosts);
+  const userFeedPosts: any[] = useSelector(
+    (state: any) => state.user.feedPosts
+  );
+  const [feed, setFeed] = useState<any[]>([]);
+  const [randomImage, setRandomImage] = useState("");
+  const [randomActivity, setRandomActivity] = useState("");
 
   useEffect(() => {
     fetchUserPosts();
-    console.log(userFeedPosts);
   }, []);
 
   const fetchUserPosts = () => dispatch(fetchUserFeedPosts() as any);
 
   useEffect(() => {
-    console.log(userFeedPosts);
+    fetchRandomImage();
+    fetchRandomActivity();
+    setFeed(userFeedPosts);
+    const randomPost = {
+      userInfo: { name: "Your random post" },
+      post: { caption: "Bored? " + randomActivity, downloadUrl: randomImage },
+    };
+
+    setFeed((feed) => [...feed.reverse(), randomPost]);
+    setFeed((feed) => [...feed.reverse()]);
+    console.log(feed);
   }, [userFeedPosts]);
+
+  const fetchRandomImage = async () => {
+    const res = await fetch("https://source.unsplash.com/random/800x600");
+    const imageBlob = await res.blob();
+    const imageObjectURL = URL.createObjectURL(imageBlob);
+    setRandomImage(imageObjectURL);
+  };
+
+  const fetchRandomActivity = async () => {
+    fetch("https://www.boredapi.com/api/activity")
+      .then((response) => response.json())
+      .then((actualData) => setRandomActivity(actualData.activity));
+  };
 
   return (
     <View style={styles.container}>
@@ -26,10 +53,11 @@ export default function Feed() {
         <FlatList
           numColumns={1}
           horizontal={false}
-          data={userFeedPosts}
+          data={feed}
           renderItem={({ item }) => (
             <View>
               <Text style={styles.container}>{item.userInfo.name}</Text>
+              <Text style={styles.container}>{item.post.caption}</Text>
               <Image
                 style={styles.image}
                 source={{ uri: item.post.downloadUrl }}
