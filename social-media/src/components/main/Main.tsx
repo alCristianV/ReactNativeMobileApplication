@@ -8,25 +8,23 @@ import { AuthContext } from '../../../App';
 import { icons } from '../../constants/icons';
 import { navigationConst } from '../../constants/navigation';
 import { values } from '../../constants/values';
+import { MainTabParamList } from '../../types/MainTabParamList';
 import { ErrorHandler } from '../error/ErrorHandler';
+import AddScreen from './Add';
 import FeedScreen from './Feed';
 import ProfileScreen from './Profile';
 import SearchScreen from './Search';
 
-const EmptyScreen = () => {
-  return null;
-};
-
-const Tab = createMaterialBottomTabNavigator();
+const Tab = createMaterialBottomTabNavigator<MainTabParamList>();
 
 export default function Main() {
   const auth = useContext(AuthContext);
 
   return (
     <ErrorHandler>
-      <Tab.Navigator initialRouteName={navigationConst.FEED} labeled={false}>
+      <Tab.Navigator initialRouteName="Feed" labeled={false}>
         <Tab.Screen
-          name={navigationConst.FEED}
+          name="Feed"
           component={FeedScreen}
           options={{
             tabBarIcon: ({ color }) => (
@@ -39,7 +37,7 @@ export default function Main() {
           }}
         />
         <Tab.Screen
-          name={navigationConst.SEARCH}
+          name="Search"
           component={SearchScreen}
           options={{
             tabBarIcon: ({ color }) => (
@@ -52,14 +50,8 @@ export default function Main() {
           }}
         />
         <Tab.Screen
-          name={navigationConst.ADD_CONTAINER}
-          component={EmptyScreen}
-          listeners={({ navigation }) => ({
-            tabPress: (event) => {
-              event.preventDefault();
-              navigation.navigate(navigationConst.ADD);
-            },
-          })}
+          name="Add"
+          component={AddScreen}
           options={{
             tabBarIcon: ({ color }) => (
               <MaterialCommunityIcons
@@ -71,16 +63,7 @@ export default function Main() {
           }}
         />
         <Tab.Screen
-          name={navigationConst.PROFILE}
-          component={ProfileScreen}
-          listeners={({ navigation }) => ({
-            tabPress: (event) => {
-              event.preventDefault();
-              navigation.navigate(navigationConst.PROFILE, {
-                uid: auth.currentUser?.uid as string,
-              });
-            },
-          })}
+          name="Profile"
           options={{
             tabBarIcon: ({ color }) => (
               <MaterialCommunityIcons
@@ -90,7 +73,9 @@ export default function Main() {
               />
             ),
           }}
-        />
+        >
+          {() => <ProfileScreen userId={auth.currentUser?.uid!} />}
+        </Tab.Screen>
       </Tab.Navigator>
     </ErrorHandler>
   );

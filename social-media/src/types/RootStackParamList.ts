@@ -1,11 +1,10 @@
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { SaveProps } from '../components/main/Save';
 
-type RootStackParamList = {
+export type RootStackParamList = {
+  Landing: undefined;
   Register: undefined;
   Login: undefined;
+  Main: undefined;
+  Add: undefined;
+  Save: SaveProps;
 };
-
-export type RegisterProps = NativeStackScreenProps<
-  RootStackParamList,
-  "Register"
->;

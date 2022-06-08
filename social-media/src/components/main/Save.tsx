@@ -9,19 +9,23 @@ import { StackActions, useNavigation } from '@react-navigation/native';
 import { AuthContext } from '../../../App';
 import { ErrorHandler } from '../error/ErrorHandler';
 
-export default function Save(props: any) {
+export interface SaveProps {
+  imageUri: string;
+}
+
+export default function Save(props: SaveProps) {
   const [caption, setCaption] = useState("");
   const navigation = useNavigation();
   const auth = useContext(AuthContext);
+  const { imageUri } = props;
 
   const uploadImage = async () => {
-    const uri = props.route.params.image;
     const childPath = `post/${auth.currentUser?.uid}/${Math.random().toString(
       36
     )}`;
     console.log(childPath);
 
-    const response = await fetch(uri);
+    const response = await fetch(imageUri);
     const blob = await response.blob();
 
     const storageRef = ref(getStorage(), childPath);
@@ -52,7 +56,7 @@ export default function Save(props: any) {
   return (
     <ErrorHandler>
       <View style={{ flex: 1 }}>
-        <Image source={{ uri: props.route.params.image }} />
+        <Image source={{ uri: imageUri }} />
         <TextInput
           placeholder="Write a Caption . . ."
           onChangeText={(caption) => setCaption(caption)}

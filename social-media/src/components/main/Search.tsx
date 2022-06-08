@@ -2,13 +2,20 @@ import { collection, getDocs, getFirestore, query, where } from 'firebase/firest
 import React, { useState } from 'react';
 import { FlatList, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
+import { MaterialBottomTabNavigationProp } from '@react-navigation/material-bottom-tabs';
 import { useNavigation } from '@react-navigation/native';
 
 import { navigationConst } from '../../constants/navigation';
+import { MainTabParamList } from '../../types/MainTabParamList';
 import { ErrorHandler } from '../error/ErrorHandler';
 
+type searchScreenProp = MaterialBottomTabNavigationProp<
+  MainTabParamList,
+  "Search"
+>;
+
 export default function Search() {
-  const navigation = useNavigation<any>();
+  const navigation = useNavigation<searchScreenProp>();
   const [users, setUsers] = useState<any>([]);
 
   const fetchUsers = async (search: string) => {
@@ -40,7 +47,7 @@ export default function Search() {
           renderItem={({ item }) => (
             <TouchableOpacity
               onPress={() =>
-                navigation.navigate(navigationConst.PROFILE, { uid: item.id })
+                navigation.navigate("Profile", { userId: item.id })
               }
             >
               <Text>{item.data.name}</Text>

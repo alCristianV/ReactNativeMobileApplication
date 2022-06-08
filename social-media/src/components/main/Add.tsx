@@ -4,9 +4,13 @@ import React, { useEffect, useState } from 'react';
 import { Button, Image, StyleSheet, Text, View } from 'react-native';
 
 import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
 
 import { navigationConst } from '../../constants/navigation';
+import { RootStackParamList } from '../../types/RootStackParamList';
 import { ErrorHandler } from '../error/ErrorHandler';
+
+type addScreenProp = StackNavigationProp<RootStackParamList, "Add">;
 
 export default function Add() {
   const [hasGalleryPermission, setHasGalleryPermission] = useState(false);
@@ -14,7 +18,7 @@ export default function Add() {
   const [camera, setCamera] = useState<Camera | null>(null);
   const [image, setImage] = useState("");
   const [type, setType] = useState(Camera.Constants.Type.back);
-  const navigation = useNavigation<any>();
+  const navigation = useNavigation<addScreenProp>();
 
   useEffect(() => {
     const init = async () => {
@@ -82,8 +86,8 @@ export default function Add() {
         <Button
           title="Save"
           onPress={() =>
-            navigation.navigate(navigationConst.SAVE, {
-              image,
+            navigation.navigate("Save", {
+              imageUri: image,
             })
           }
         />

@@ -11,15 +11,19 @@ import { fetchUser, fetchUserPosts } from '../../redux/slices/userSlice';
 import { getUsersFollowingDoc } from '../../utils/getUsersFollowingDoc';
 import { ErrorHandler } from '../error/ErrorHandler';
 
-export default function Profile(props: any) {
+export interface ProfileProps {
+  userId: string;
+}
+
+export default function Profile(props: ProfileProps) {
   const dispatch = useDispatch();
   const [following, setFollowing] = useState(false);
   const user = useSelector((state: any) => state.user.user);
   const userPosts = useSelector((state: any) => state.user.posts);
   const auth = useContext(AuthContext);
+  const { userId } = props;
 
   useEffect(() => {
-    const userId = props.route.params.uid;
     const currentUserId = auth.currentUser?.uid as string;
     if (userId === auth.currentUser?.uid) {
       dispatch(fetchUser(currentUserId) as any);
@@ -31,7 +35,7 @@ export default function Profile(props: any) {
 
       subscribeUserFollowing(currentUserId);
     }
-  }, [props.route.params.uid]);
+  }, [userId]);
 
   const onFollow = () => {
     addDoc(
@@ -41,17 +45,14 @@ export default function Profile(props: any) {
         auth.currentUser?.uid as string,
         "userFollowing"
       ),
-      { userId: props.route.params.uid }
+      { userId: userId }
     );
   };
   const onUnfollow = async () => {
     const currentUserId = auth.currentUser?.uid as string;
     const usersFollowingCollectionRef = getUsersFollowingDoc(currentUserId);
     const propsUserDoc = await getDocs(
-      query(
-        usersFollowingCollectionRef,
-        where("userId", "==", props.route.params.uid)
-      )
+      query(usersFollowingCollectionRef, where("userId", "==", userId))
     );
 
     propsUserDoc.forEach((doc) => {
@@ -73,7 +74,7 @@ export default function Profile(props: any) {
         });
         console.log("doc2");
         console.log(docs.join(", "));
-        if (docs.indexOf(props.route.params.uid) > -1) {
+        if (docs.indexOf(userId) > -1) {
           setFollowing(true);
         } else {
           setFollowing(false);
@@ -99,7 +100,7 @@ export default function Profile(props: any) {
           <Text>{user?.name}</Text>
           <Text>{user?.email}</Text>
 
-          {props.route.params.uid !== auth.currentUser?.uid ? (
+          {userId !== auth.currentUser?.uid ? (
             <View>
               {following ? (
                 <Button title="Following" onPress={() => onUnfollow()} />

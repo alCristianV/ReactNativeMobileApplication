@@ -16,6 +16,7 @@ import SaveScreen from './src/components/main/Save';
 import { firebaseConfig } from './src/constants/firebaseConfig';
 import { navigationConst } from './src/constants/navigation';
 import store from './src/redux/store/store';
+import { RootStackParamList } from './src/types/RootStackParamList';
 
 if (firebaseApp.getApps().length === 0) {
   firebaseApp.initializeApp(firebaseConfig);
@@ -28,7 +29,7 @@ export default function App() {
   const [loggedIn, setLoggedIn] = useState(false);
   const [loaded, setLoaded] = useState(false);
 
-  const Stack = createNativeStackNavigator();
+  const Stack = createNativeStackNavigator<RootStackParamList>();
 
   useEffect(() => {
     auth.onAuthStateChanged((user) => {
@@ -53,20 +54,14 @@ export default function App() {
     return (
       <AuthContext.Provider value={auth}>
         <NavigationContainer>
-          <Stack.Navigator initialRouteName={navigationConst.LANDING}>
+          <Stack.Navigator initialRouteName="Landing">
             <Stack.Screen
-              name={navigationConst.LANDING}
+              name="Landing"
               component={LandingScreen}
               options={{ headerShown: false }}
             />
-            <Stack.Screen
-              name={navigationConst.REGISTER}
-              component={RegisterScreen}
-            />
-            <Stack.Screen
-              name={navigationConst.LOGIN}
-              component={LoginScreen}
-            />
+            <Stack.Screen name="Register" component={RegisterScreen} />
+            <Stack.Screen name="Login" component={LoginScreen} />
           </Stack.Navigator>
         </NavigationContainer>
       </AuthContext.Provider>
@@ -77,10 +72,10 @@ export default function App() {
     <Provider store={store}>
       <AuthContext.Provider value={auth}>
         <NavigationContainer>
-          <Stack.Navigator initialRouteName={navigationConst.MAIN}>
-            <Stack.Screen name={navigationConst.MAIN} component={MainScreen} />
-            <Stack.Screen name={navigationConst.ADD} component={AddScreen} />
-            <Stack.Screen name={navigationConst.SAVE} component={SaveScreen} />
+          <Stack.Navigator initialRouteName="Main">
+            <Stack.Screen name="Main" component={MainScreen} />
+            <Stack.Screen name="Add" component={AddScreen} />
+            <Stack.Screen name="Save" component={SaveScreen} />
           </Stack.Navigator>
         </NavigationContainer>
       </AuthContext.Provider>
