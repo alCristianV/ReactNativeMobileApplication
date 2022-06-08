@@ -9,6 +9,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { titles } from '../../constants/titles';
 import { fetchUser, fetchUserPosts } from '../../redux/slices/userSlice';
 import { getUsersFollowingDoc } from '../../utils/getUsersFollowingDoc';
+import { ErrorHandler } from '../error/ErrorHandler';
 
 export default function Profile(props: any) {
   const dispatch = useDispatch();
@@ -92,42 +93,44 @@ export default function Profile(props: any) {
   }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.containerInfo}>
-        <Text>{user?.name}</Text>
-        <Text>{user?.email}</Text>
+    <ErrorHandler>
+      <View style={styles.container}>
+        <View style={styles.containerInfo}>
+          <Text>{user?.name}</Text>
+          <Text>{user?.email}</Text>
 
-        {props.route.params.uid !== getAuth().currentUser?.uid ? (
-          <View>
-            {following ? (
-              <Button title="Following" onPress={() => onUnfollow()} />
-            ) : (
-              <Button title="Follow" onPress={() => onFollow()} />
-            )}
-          </View>
-        ) : (
-          <Button title="Logout" onPress={() => onLogout()} />
-        )}
-      </View>
+          {props.route.params.uid !== getAuth().currentUser?.uid ? (
+            <View>
+              {following ? (
+                <Button title="Following" onPress={() => onUnfollow()} />
+              ) : (
+                <Button title="Follow" onPress={() => onFollow()} />
+              )}
+            </View>
+          ) : (
+            <Button title="Logout" onPress={() => onLogout()} />
+          )}
+        </View>
 
-      <View style={styles.containerGallery}>
-        {userPosts && (
-          <FlatList
-            numColumns={3}
-            horizontal={false}
-            data={userPosts}
-            renderItem={({ item }) => (
-              <View style={styles.containerImage}>
-                <Image
-                  style={styles.image}
-                  source={{ uri: item.downloadUrl }}
-                />
-              </View>
-            )}
-          />
-        )}
+        <View style={styles.containerGallery}>
+          {userPosts && (
+            <FlatList
+              numColumns={3}
+              horizontal={false}
+              data={userPosts}
+              renderItem={({ item }) => (
+                <View style={styles.containerImage}>
+                  <Image
+                    style={styles.image}
+                    source={{ uri: item.downloadUrl }}
+                  />
+                </View>
+              )}
+            />
+          )}
+        </View>
       </View>
-    </View>
+    </ErrorHandler>
   );
 }
 

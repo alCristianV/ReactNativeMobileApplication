@@ -6,6 +6,7 @@ import { Button, Image, StyleSheet, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 import { navigationConst } from '../../constants/navigation';
+import { ErrorHandler } from '../error/ErrorHandler';
 
 export default function Add() {
   const [hasGalleryPermission, setHasGalleryPermission] = useState(false);
@@ -16,14 +17,15 @@ export default function Add() {
   const navigation = useNavigation<any>();
 
   useEffect(() => {
-    (async () => {
+    const init = async () => {
       const cameraStatus = await Camera.requestCameraPermissionsAsync();
-      setHasCameraPermission(cameraStatus.status === "granted");
+      setHasCameraPermission(cameraStatus?.status === "granted");
 
       const galleryStatus =
         await ImagePicker.requestMediaLibraryPermissionsAsync();
-      setHasGalleryPermission(galleryStatus.status === "granted");
-    })();
+      setHasGalleryPermission(galleryStatus?.status === "granted");
+    };
+    init();
   }, []);
 
   const takePicture = async () => {
@@ -51,38 +53,43 @@ export default function Add() {
     return <Text>No access to camera</Text>;
   }
   return (
-    <View style={{ flex: 1 }}>
-      <View style={styles.cameraContainer}>
-        <Camera
-          ref={(ref) => setCamera(ref)}
-          style={styles.fixedRatio}
-          type={type}
-          ratio={"1:1"}
-        />
-      </View>
+    <ErrorHandler>
+      <View style={{ flex: 1 }}>
+        <View style={styles.cameraContainer}>
+          <Camera
+            ref={(ref) => setCamera(ref)}
+            style={styles.fixedRatio}
+            type={type}
+            ratio={"1:1"}
+          />
+        </View>
 
-      <Button
-        title="Flip Image"
-        onPress={() => {
-          setType(
-            type === Camera.Constants.Type.back
-              ? Camera.Constants.Type.front
-              : Camera.Constants.Type.back
-          );
-        }}
-      ></Button>
-      <Button title="Take Picture" onPress={() => takePicture()} />
-      <Button title="Pick Image From Gallery" onPress={() => pickImage()} />
-      <Button
-        title="Save"
-        onPress={() =>
-          navigation.navigate(navigationConst.SAVE, {
-            image,
-          })
-        }
-      />
-      {image ? <Image source={{ uri: image }} style={{ flex: 1 }} /> : null}
-    </View>
+        <Button
+          title="Flip Image"
+          onPress={() => {
+            setType(
+              type === Camera.Constants.Type.back
+                ? Camera.Constants.Type.front
+                : Camera.Constants.Type.back
+            );
+          }}
+        ></Button>
+        <Button title="Take Picture" onPress={() => takePicture()} />
+        <Button
+          title="Pick Image From Gallery"
+          onPress={async () => await pickImage()}
+        />
+        <Button
+          title="Save"
+          onPress={() =>
+            navigation.navigate(navigationConst.SAVE, {
+              image,
+            })
+          }
+        />
+        {image ? <Image source={{ uri: image }} style={{ flex: 1 }} /> : null}
+      </View>
+    </ErrorHandler>
   );
 }
 

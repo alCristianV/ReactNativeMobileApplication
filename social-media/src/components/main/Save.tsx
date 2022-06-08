@@ -6,6 +6,8 @@ import { Button, Image, Text, TextInput, View } from 'react-native';
 
 import { StackActions, useNavigation } from '@react-navigation/native';
 
+import { ErrorHandler } from '../error/ErrorHandler';
+
 export default function Save(props: any) {
   const [caption, setCaption] = useState("");
   const navigation = useNavigation();
@@ -46,14 +48,16 @@ export default function Save(props: any) {
     ).then(() => navigation.dispatch(StackActions.popToTop()));
   };
   return (
-    <View style={{ flex: 1 }}>
-      <Image source={{ uri: props.route.params.image }} />
-      <TextInput
-        placeholder="Write a Caption . . ."
-        onChangeText={(caption) => setCaption(caption)}
-      />
+    <ErrorHandler>
+      <View style={{ flex: 1 }}>
+        <Image source={{ uri: props.route.params.image }} />
+        <TextInput
+          placeholder="Write a Caption . . ."
+          onChangeText={(caption) => setCaption(caption)}
+        />
 
-      <Button title="Save" onPress={() => uploadImage()} />
-    </View>
+        <Button title="Save" onPress={() => uploadImage()} />
+      </View>
+    </ErrorHandler>
   );
 }

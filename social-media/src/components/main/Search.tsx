@@ -5,6 +5,7 @@ import { FlatList, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import { useNavigation } from '@react-navigation/native';
 
 import { navigationConst } from '../../constants/navigation';
+import { ErrorHandler } from '../error/ErrorHandler';
 
 export default function Search() {
   const navigation = useNavigation<any>();
@@ -25,26 +26,28 @@ export default function Search() {
     setUsers(newUsers);
   };
   return (
-    <View>
-      <TextInput
-        placeholder="Type Here..."
-        onChangeText={async (search) => await fetchUsers(search)}
-      />
+    <ErrorHandler>
+      <View>
+        <TextInput
+          placeholder="Type Here..."
+          onChangeText={async (search) => await fetchUsers(search)}
+        />
 
-      <FlatList
-        numColumns={1}
-        horizontal={false}
-        data={users}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            onPress={() =>
-              navigation.navigate(navigationConst.PROFILE, { uid: item.id })
-            }
-          >
-            <Text>{item.data.name}</Text>
-          </TouchableOpacity>
-        )}
-      />
-    </View>
+        <FlatList
+          numColumns={1}
+          horizontal={false}
+          data={users}
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              onPress={() =>
+                navigation.navigate(navigationConst.PROFILE, { uid: item.id })
+              }
+            >
+              <Text>{item.data.name}</Text>
+            </TouchableOpacity>
+          )}
+        />
+      </View>
+    </ErrorHandler>
   );
 }
