@@ -1,22 +1,24 @@
 import { getAuth } from 'firebase/auth';
 import { addDoc, collection, doc, getFirestore, serverTimestamp, setDoc } from 'firebase/firestore';
 import { getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Button, Image, Text, TextInput, View } from 'react-native';
 
 import { StackActions, useNavigation } from '@react-navigation/native';
 
+import { AuthContext } from '../../../App';
 import { ErrorHandler } from '../error/ErrorHandler';
 
 export default function Save(props: any) {
   const [caption, setCaption] = useState("");
   const navigation = useNavigation();
+  const auth = useContext(AuthContext);
 
   const uploadImage = async () => {
     const uri = props.route.params.image;
-    const childPath = `post/${
-      getAuth().currentUser?.uid
-    }/${Math.random().toString(36)}`;
+    const childPath = `post/${auth.currentUser?.uid}/${Math.random().toString(
+      36
+    )}`;
     console.log(childPath);
 
     const response = await fetch(uri);
@@ -37,7 +39,7 @@ export default function Save(props: any) {
       collection(
         getFirestore(),
         "posts",
-        getAuth().currentUser?.uid as string,
+        auth.currentUser?.uid as string,
         "userPosts"
       ),
       {

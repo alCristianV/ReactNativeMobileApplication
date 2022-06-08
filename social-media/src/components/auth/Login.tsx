@@ -1,15 +1,18 @@
-import React, { useMemo, useState } from "react";
-import { Button, TextInput, View } from "react-native";
-import { placeholders } from "../../constants/placeholders";
-import { titles } from "../../constants/titles";
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+import React, { useContext, useMemo, useState } from 'react';
+import { Button, TextInput, View } from 'react-native';
+
+import { AuthContext } from '../../../App';
+import { placeholders } from '../../constants/placeholders';
+import { titles } from '../../constants/titles';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const auth = useContext(AuthContext);
 
   const onSignUp = () => {
-    signInWithEmailAndPassword(getAuth(), email, password);
+    signInWithEmailAndPassword(auth, email, password);
   };
 
   return (

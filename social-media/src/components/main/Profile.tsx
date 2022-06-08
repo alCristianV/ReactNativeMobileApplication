@@ -2,11 +2,11 @@ import { getAuth } from 'firebase/auth';
 import {
     addDoc, collection, deleteDoc, doc, getDoc, getDocs, getFirestore, onSnapshot, query, where
 } from 'firebase/firestore';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Button, FlatList, Image, StyleSheet, Text, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { titles } from '../../constants/titles';
+import { AuthContext } from '../../../App';
 import { fetchUser, fetchUserPosts } from '../../redux/slices/userSlice';
 import { getUsersFollowingDoc } from '../../utils/getUsersFollowingDoc';
 import { ErrorHandler } from '../error/ErrorHandler';
@@ -16,12 +16,12 @@ export default function Profile(props: any) {
   const [following, setFollowing] = useState(false);
   const user = useSelector((state: any) => state.user.user);
   const userPosts = useSelector((state: any) => state.user.posts);
-  //const userFollowing = useSelector((state: any) => state.user.following);
+  const auth = useContext(AuthContext);
 
   useEffect(() => {
     const userId = props.route.params.uid;
-    const currentUserId = getAuth().currentUser?.uid as string;
-    if (userId === getAuth().currentUser?.uid) {
+    const currentUserId = auth.currentUser?.uid as string;
+    if (userId === auth.currentUser?.uid) {
       dispatch(fetchUser(currentUserId) as any);
       dispatch(fetchUserPosts(currentUserId) as any);
       return;
@@ -38,14 +38,14 @@ export default function Profile(props: any) {
       collection(
         getFirestore(),
         "following",
-        getAuth().currentUser?.uid as string,
+        auth.currentUser?.uid as string,
         "userFollowing"
       ),
       { userId: props.route.params.uid }
     );
   };
   const onUnfollow = async () => {
-    const currentUserId = getAuth().currentUser?.uid as string;
+    const currentUserId = auth.currentUser?.uid as string;
     const usersFollowingCollectionRef = getUsersFollowingDoc(currentUserId);
     const propsUserDoc = await getDocs(
       query(
@@ -85,7 +85,7 @@ export default function Profile(props: any) {
   };
 
   const onLogout = () => {
-    getAuth().signOut();
+    auth.signOut();
   };
 
   if (user === null) {
@@ -99,7 +99,7 @@ export default function Profile(props: any) {
           <Text>{user?.name}</Text>
           <Text>{user?.email}</Text>
 
-          {props.route.params.uid !== getAuth().currentUser?.uid ? (
+          {props.route.params.uid !== auth.currentUser?.uid ? (
             <View>
               {following ? (
                 <Button title="Following" onPress={() => onUnfollow()} />

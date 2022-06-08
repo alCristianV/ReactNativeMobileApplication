@@ -1,9 +1,10 @@
 import { getAuth } from 'firebase/auth';
-import React from 'react';
+import React, { useContext } from 'react';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 
+import { AuthContext } from '../../../App';
 import { icons } from '../../constants/icons';
 import { navigationConst } from '../../constants/navigation';
 import { values } from '../../constants/values';
@@ -19,6 +20,8 @@ const EmptyScreen = () => {
 const Tab = createMaterialBottomTabNavigator();
 
 export default function Main() {
+  const auth = useContext(AuthContext);
+
   return (
     <ErrorHandler>
       <Tab.Navigator initialRouteName={navigationConst.FEED} labeled={false}>
@@ -74,7 +77,7 @@ export default function Main() {
             tabPress: (event) => {
               event.preventDefault();
               navigation.navigate(navigationConst.PROFILE, {
-                uid: getAuth().currentUser?.uid as string,
+                uid: auth.currentUser?.uid as string,
               });
             },
           })}

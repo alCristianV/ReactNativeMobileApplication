@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { Button, Image, StyleSheet, Text, View } from 'react-native';
+import React, { useContext, useEffect, useState } from 'react';
+import { Button, StyleSheet, Text, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 
+import { AuthContext } from '../../../App';
 import { titles } from '../../constants/titles';
 import { fetchUserFeedPosts } from '../../redux/slices/userSlice';
 import { ErrorHandler } from '../error/ErrorHandler';
@@ -15,12 +16,14 @@ export default function Feed() {
   const [feed, setFeed] = useState<any[]>([]);
   const [randomImage, setRandomImage] = useState("");
   const [randomActivity, setRandomActivity] = useState("");
+  const auth = useContext(AuthContext);
 
   useEffect(() => {
     fetchUserPosts();
   }, []);
 
-  const fetchUserPosts = () => dispatch(fetchUserFeedPosts() as any);
+  const fetchUserPosts = () =>
+    dispatch(fetchUserFeedPosts(auth.currentUser?.uid as string) as any);
 
   useEffect(() => {
     fetchRandomImage();

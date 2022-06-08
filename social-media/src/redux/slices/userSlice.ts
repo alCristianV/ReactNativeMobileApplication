@@ -49,8 +49,8 @@ export const fetchUserPosts = createAsyncThunk(
 
 export const fetchUserFeedPosts = createAsyncThunk(
   "fetchUserFeedPosts",
-  async () => {
-    const followings = await getUserFollowing();
+  async (userId: string) => {
+    const followings = await getUserFollowing(userId);
     const followedUsers = await Promise.all(
       followings.map(async (followingId) => {
         return {
@@ -78,9 +78,8 @@ export const fetchUserFeedPosts = createAsyncThunk(
   }
 );
 
-const getUserFollowing = async () => {
-  const currentUserId = getAuth().currentUser?.uid as string;
-  const usersFollowingCollectionRef = getUsersFollowingDoc(currentUserId);
+const getUserFollowing = async (userId: string) => {
+  const usersFollowingCollectionRef = getUsersFollowingDoc(userId);
 
   const usersFollowingDocsSnap = await getDocs(usersFollowingCollectionRef);
   const followings: string[] = [];

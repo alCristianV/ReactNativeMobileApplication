@@ -1,6 +1,6 @@
 import * as firebaseApp from 'firebase/app';
-import { getAuth } from 'firebase/auth';
-import { useEffect, useState } from 'react';
+import { Auth, getAuth } from 'firebase/auth';
+import React, { useEffect, useState } from 'react';
 import { Text, View } from 'react-native';
 import { Provider } from 'react-redux';
 
@@ -20,13 +20,18 @@ import store from './src/redux/store/store';
 if (firebaseApp.getApps().length === 0) {
   firebaseApp.initializeApp(firebaseConfig);
 }
-const Stack = createNativeStackNavigator();
+
+const auth = getAuth();
+
+export const AuthContext = React.createContext<Auth>(auth);
 export default function App() {
   const [loggedIn, setLoggedIn] = useState(false);
   const [loaded, setLoaded] = useState(false);
 
+  const Stack = createNativeStackNavigator();
+
   useEffect(() => {
-    getAuth().onAuthStateChanged((user) => {
+    auth.onAuthStateChanged((user) => {
       setLoaded(true);
       if (user) {
         setLoggedIn(true);
@@ -46,32 +51,39 @@ export default function App() {
 
   if (!loggedIn) {
     return (
-      <NavigationContainer>
-        <Stack.Navigator initialRouteName={navigationConst.LANDING}>
-          <Stack.Screen
-            name={navigationConst.LANDING}
-            component={LandingScreen}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name={navigationConst.REGISTER}
-            component={RegisterScreen}
-          />
-          <Stack.Screen name={navigationConst.LOGIN} component={LoginScreen} />
-        </Stack.Navigator>
-      </NavigationContainer>
+      <AuthContext.Provider value={auth}>
+        <NavigationContainer>
+          <Stack.Navigator initialRouteName={navigationConst.LANDING}>
+            <Stack.Screen
+              name={navigationConst.LANDING}
+              component={LandingScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name={navigationConst.REGISTER}
+              component={RegisterScreen}
+            />
+            <Stack.Screen
+              name={navigationConst.LOGIN}
+              component={LoginScreen}
+            />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </AuthContext.Provider>
     );
   }
 
   return (
     <Provider store={store}>
-      <NavigationContainer>
-        <Stack.Navigator initialRouteName={navigationConst.MAIN}>
-          <Stack.Screen name={navigationConst.MAIN} component={MainScreen} />
-          <Stack.Screen name={navigationConst.ADD} component={AddScreen} />
-          <Stack.Screen name={navigationConst.SAVE} component={SaveScreen} />
-        </Stack.Navigator>
-      </NavigationContainer>
+      <AuthContext.Provider value={auth}>
+        <NavigationContainer>
+          <Stack.Navigator initialRouteName={navigationConst.MAIN}>
+            <Stack.Screen name={navigationConst.MAIN} component={MainScreen} />
+            <Stack.Screen name={navigationConst.ADD} component={AddScreen} />
+            <Stack.Screen name={navigationConst.SAVE} component={SaveScreen} />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </AuthContext.Provider>
     </Provider>
   );
 }
