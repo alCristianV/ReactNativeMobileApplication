@@ -1,8 +1,9 @@
-import { getAuth } from 'firebase/auth';
 import React, { useContext } from 'react';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
+import {
+    createMaterialBottomTabNavigator, MaterialBottomTabNavigationProp
+} from '@react-navigation/material-bottom-tabs';
 
 import { AuthContext } from '../../../App';
 import { icons } from '../../constants/icons';
@@ -16,6 +17,11 @@ import ProfileScreen from './Profile';
 import SearchScreen from './Search';
 
 const Tab = createMaterialBottomTabNavigator<MainTabParamList>();
+
+type searchScreenProp = MaterialBottomTabNavigationProp<
+  MainTabParamList,
+  "Search"
+>;
 
 export default function Main() {
   const auth = useContext(AuthContext);
@@ -64,6 +70,15 @@ export default function Main() {
         />
         <Tab.Screen
           name="Profile"
+          component={ProfileScreen}
+          listeners={({ navigation }) => ({
+            tabPress: (event) => {
+              event.preventDefault();
+              (navigation as searchScreenProp).navigate("Profile", {
+                userId: auth.currentUser?.uid!,
+              });
+            },
+          })}
           options={{
             tabBarIcon: ({ color }) => (
               <MaterialCommunityIcons
@@ -73,9 +88,7 @@ export default function Main() {
               />
             ),
           }}
-        >
-          {() => <ProfileScreen userId={auth.currentUser?.uid!} />}
-        </Tab.Screen>
+        />
       </Tab.Navigator>
     </ErrorHandler>
   );

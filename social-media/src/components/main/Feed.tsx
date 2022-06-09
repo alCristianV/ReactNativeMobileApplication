@@ -1,18 +1,17 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Button, StyleSheet, Text, View } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
 
 import { AuthContext } from '../../../App';
 import { titles } from '../../constants/titles';
-import { fetchUserFeedPosts } from '../../redux/slices/userSlice';
+import { useAppDispatch, useAppSelector } from '../../redux/hooks/hooks';
+import { fetchUserFeedPosts, selectFeedPosts } from '../../redux/slices/feedSlice';
+import { selectPosts } from '../../redux/slices/postsSlice';
 import { ErrorHandler } from '../error/ErrorHandler';
 import AnimatedFeedList from './AnimatedFeedList';
 
 export default function Feed() {
-  const dispatch = useDispatch();
-  const userFeedPosts: any[] = useSelector(
-    (state: any) => state.user.feedPosts
-  );
+  const dispatch = useAppDispatch();
+  const userFeedPosts = useAppSelector((state) => selectFeedPosts(state));
   const [feed, setFeed] = useState<any[]>([]);
   const [randomImage, setRandomImage] = useState("");
   const [randomActivity, setRandomActivity] = useState("");
@@ -23,12 +22,14 @@ export default function Feed() {
   }, []);
 
   const fetchUserPosts = () =>
-    dispatch(fetchUserFeedPosts(auth.currentUser?.uid as string) as any);
+    dispatch(fetchUserFeedPosts(auth.currentUser?.uid as string));
 
   useEffect(() => {
     fetchRandomImage();
     fetchRandomActivity();
     setFeed(userFeedPosts);
+    console.log(auth.currentUser?.uid);
+    console.log(userFeedPosts);
     const randomPost = {
       userInfo: { name: "Your random post" },
       post: { caption: "Bored? " + randomActivity, downloadUrl: randomImage },

@@ -5,7 +5,6 @@ import { FlatList, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import { MaterialBottomTabNavigationProp } from '@react-navigation/material-bottom-tabs';
 import { useNavigation } from '@react-navigation/native';
 
-import { navigationConst } from '../../constants/navigation';
 import { MainTabParamList } from '../../types/MainTabParamList';
 import { ErrorHandler } from '../error/ErrorHandler';
 
@@ -46,9 +45,9 @@ export default function Search() {
           data={users}
           renderItem={({ item }) => (
             <TouchableOpacity
-              onPress={() =>
-                navigation.navigate("Profile", { userId: item.id })
-              }
+              onPress={() => {
+                navigation.navigate("Profile", { userId: item.id });
+              }}
             >
               <Text>{item.data.name}</Text>
             </TouchableOpacity>

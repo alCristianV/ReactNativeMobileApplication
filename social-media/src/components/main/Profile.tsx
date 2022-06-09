@@ -4,38 +4,46 @@ import {
 } from 'firebase/firestore';
 import React, { useContext, useEffect, useState } from 'react';
 import { Button, FlatList, Image, StyleSheet, Text, View } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
+
+import {
+    MaterialBottomTabNavigationProp, MaterialBottomTabScreenProps
+} from '@react-navigation/material-bottom-tabs';
 
 import { AuthContext } from '../../../App';
-import { fetchUser, fetchUserPosts } from '../../redux/slices/userSlice';
+import { useAppDispatch, useAppSelector } from '../../redux/hooks/hooks';
+import { fetchUserPosts, selectPosts } from '../../redux/slices/postsSlice';
+import { fetchUser, selectUser } from '../../redux/slices/usersSlice';
+import { MainTabParamList } from '../../types/MainTabParamList';
 import { getUsersFollowingDoc } from '../../utils/getUsersFollowingDoc';
 import { ErrorHandler } from '../error/ErrorHandler';
 
-export interface ProfileProps {
-  userId: string;
-}
+type Props = MaterialBottomTabScreenProps<MainTabParamList, "Profile">;
 
-export default function Profile(props: ProfileProps) {
-  const dispatch = useDispatch();
+export default function Profile({ route, navigation }: Props) {
+  const dispatch = useAppDispatch();
   const [following, setFollowing] = useState(false);
-  const user = useSelector((state: any) => state.user.user);
-  const userPosts = useSelector((state: any) => state.user.posts);
+  const user = useAppSelector((state) => selectUser(state));
+  const userPosts = useAppSelector((state) => selectPosts(state));
   const auth = useContext(AuthContext);
-  const { userId } = props;
 
   useEffect(() => {
+    if (!route.params.userId) return;
+    const newuserId = route.params.userId;
+
+    if (!newuserId) return;
     const currentUserId = auth.currentUser?.uid as string;
-    if (userId === auth.currentUser?.uid) {
-      dispatch(fetchUser(currentUserId) as any);
-      dispatch(fetchUserPosts(currentUserId) as any);
+    if (newuserId === auth.currentUser?.uid) {
+      dispatch(fetchUser(currentUserId));
+      dispatch(fetchUserPosts(currentUserId));
       return;
     } else {
-      dispatch(fetchUser(userId) as any);
-      dispatch(fetchUserPosts(userId) as any);
+      dispatch(fetchUser(newuserId));
+      dispatch(fetchUserPosts(newuserId));
 
+      console.log("subscribeUserFollowing");
       subscribeUserFollowing(currentUserId);
     }
-  }, [userId]);
+  }, [route.params.userId]);
 
   const onFollow = () => {
     addDoc(
@@ -45,14 +53,17 @@ export default function Profile(props: ProfileProps) {
         auth.currentUser?.uid as string,
         "userFollowing"
       ),
-      { userId: userId }
+      { userId: route.params.userId }
     );
   };
   const onUnfollow = async () => {
     const currentUserId = auth.currentUser?.uid as string;
     const usersFollowingCollectionRef = getUsersFollowingDoc(currentUserId);
     const propsUserDoc = await getDocs(
-      query(usersFollowingCollectionRef, where("userId", "==", userId))
+      query(
+        usersFollowingCollectionRef,
+        where("userId", "==", route.params.userId)
+      )
     );
 
     propsUserDoc.forEach((doc) => {
@@ -74,7 +85,7 @@ export default function Profile(props: ProfileProps) {
         });
         console.log("doc2");
         console.log(docs.join(", "));
-        if (docs.indexOf(userId) > -1) {
+        if (docs.indexOf(route.params.userId) > -1) {
           setFollowing(true);
         } else {
           setFollowing(false);
@@ -100,7 +111,7 @@ export default function Profile(props: ProfileProps) {
           <Text>{user?.name}</Text>
           <Text>{user?.email}</Text>
 
-          {userId !== auth.currentUser?.uid ? (
+          {route.params.userId !== auth.currentUser?.uid ? (
             <View>
               {following ? (
                 <Button title="Following" onPress={() => onUnfollow()} />
