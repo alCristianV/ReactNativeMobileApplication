@@ -2,19 +2,16 @@ import * as React from 'react';
 import { Animated, Dimensions, Image, StyleSheet, Text, View } from 'react-native';
 import { Surface } from 'react-native-paper';
 
+import { FeedPost } from '../../types/FeedPost';
 import { ErrorHandler } from '../error/ErrorHandler';
 
 const { height } = Dimensions.get("screen");
 
-// interface Data {
-//   name: string;
-//   email: string;
-//   job_title: string;
-//   key: string;
-//   avatar: string;
-// }
+export default function List({ data }: { data: FeedPost[] }) {
+  React.useEffect(() => {
+    console.log(data);
+  }, [data]);
 
-export default function List({ data }: { data: any[] }) {
   const scrollY = React.useRef(new Animated.Value(0)).current;
   return (
     <ErrorHandler>

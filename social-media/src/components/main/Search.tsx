@@ -6,6 +6,7 @@ import { MaterialBottomTabNavigationProp } from '@react-navigation/material-bott
 import { useNavigation } from '@react-navigation/native';
 
 import { MainTabParamList } from '../../types/MainTabParamList';
+import { User } from '../../types/User';
 import { ErrorHandler } from '../error/ErrorHandler';
 
 type searchScreenProp = MaterialBottomTabNavigationProp<
@@ -15,7 +16,7 @@ type searchScreenProp = MaterialBottomTabNavigationProp<
 
 export default function Search() {
   const navigation = useNavigation<searchScreenProp>();
-  const [users, setUsers] = useState<any>([]);
+  const [users, setUsers] = useState<User[]>([]);
 
   const fetchUsers = async (search: string) => {
     const usersCollectionRef = query(
@@ -24,11 +25,15 @@ export default function Search() {
     );
     const usersDocsSnap = await getDocs(usersCollectionRef);
     console.log(usersDocsSnap);
-    let newUsers: object[] = [];
+    let newUsers: User[] = [];
     usersDocsSnap.forEach((doc) => {
       console.log(doc);
-      newUsers.push({ id: doc.id, data: doc.data() });
+      newUsers.push({
+        id: doc.id,
+        data: { email: doc.data().email, name: doc.data().name },
+      });
     });
+    console.log(newUsers);
     setUsers(newUsers);
   };
   return (

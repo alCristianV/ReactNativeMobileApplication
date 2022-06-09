@@ -5,9 +5,7 @@ import {
 import React, { useContext, useEffect, useState } from 'react';
 import { Button, FlatList, Image, StyleSheet, Text, View } from 'react-native';
 
-import {
-    MaterialBottomTabNavigationProp, MaterialBottomTabScreenProps
-} from '@react-navigation/material-bottom-tabs';
+import { MaterialBottomTabScreenProps } from '@react-navigation/material-bottom-tabs';
 
 import { AuthContext } from '../../../App';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks/hooks';
@@ -78,14 +76,14 @@ export default function Profile({ route, navigation }: Props) {
     const unsubscribe = onSnapshot(
       usersFollowingCollectionRef,
       (querySnapshot) => {
-        const docs: any = [];
+        const followedUserIds: string[] = [];
         querySnapshot.forEach((doc) => {
           const followedUserId = doc.data().userId;
-          docs.push(followedUserId);
+          followedUserIds.push(followedUserId);
         });
         console.log("doc2");
-        console.log(docs.join(", "));
-        if (docs.indexOf(route.params.userId) > -1) {
+        console.log(followedUserIds.join(", "));
+        if (followedUserIds.indexOf(route.params.userId) > -1) {
           setFollowing(true);
         } else {
           setFollowing(false);

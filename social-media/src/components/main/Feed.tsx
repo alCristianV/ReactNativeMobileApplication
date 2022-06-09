@@ -1,18 +1,19 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Button, StyleSheet, Text, View } from 'react-native';
 
+//import { RNFetchBlob } from 'react-native-fetch-blob';
 import { AuthContext } from '../../../App';
 import { titles } from '../../constants/titles';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks/hooks';
 import { fetchUserFeedPosts, selectFeedPosts } from '../../redux/slices/feedSlice';
-import { selectPosts } from '../../redux/slices/postsSlice';
+import { FeedPost } from '../../types/FeedPost';
 import { ErrorHandler } from '../error/ErrorHandler';
 import AnimatedFeedList from './AnimatedFeedList';
 
 export default function Feed() {
   const dispatch = useAppDispatch();
   const userFeedPosts = useAppSelector((state) => selectFeedPosts(state));
-  const [feed, setFeed] = useState<any[]>([]);
+  const [feed, setFeed] = useState<FeedPost[]>([]);
   const [randomImage, setRandomImage] = useState("");
   const [randomActivity, setRandomActivity] = useState("");
   const auth = useContext(AuthContext);
@@ -33,22 +34,21 @@ export default function Feed() {
     const randomPost = {
       userInfo: { name: "Your random post" },
       post: { caption: "Bored? " + randomActivity, downloadUrl: randomImage },
-    };
-
+    } as FeedPost;
+    console.log(randomPost);
     setFeed((feed) => [...feed.reverse(), randomPost]);
     setFeed((feed) => [...feed.reverse()]);
     console.log(feed);
   }, [userFeedPosts]);
 
   const fetchRandomImage = async () => {
-    const res = await fetch("https://source.unsplash.com/random/800x600");
-    const imageBlob = await res.blob();
-    const imageObjectURL = URL.createObjectURL(imageBlob);
-    setRandomImage(imageObjectURL);
+    fetch("http://source.unsplash.com/random/800x600").then((res) =>
+      setRandomImage(res.url)
+    );
   };
 
   const fetchRandomActivity = async () => {
-    fetch("https://www.boredapi.com/api/activity")
+    fetch("http://www.boredapi.com/api/activity")
       .then((response) => response.json())
       .then((actualData) => setRandomActivity(actualData.activity));
   };

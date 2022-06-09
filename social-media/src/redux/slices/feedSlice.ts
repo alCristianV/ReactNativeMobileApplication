@@ -2,6 +2,8 @@ import { getDoc, getDocs } from 'firebase/firestore';
 
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
+import { FeedPost, UserInfo } from '../../types/FeedPost';
+import { Post } from '../../types/Post';
 import { getUsersDoc } from '../../utils/getUsersDoc';
 import { getUsersFollowingDoc } from '../../utils/getUsersFollowingDoc';
 import { getUsersPostsDoc } from '../../utils/getUsersPostsDoc';
@@ -11,7 +13,7 @@ import { getUserInfo } from './usersSlice';
 
 // Define a type for the slice state
 interface FeedState {
-  feedPosts: any[];
+  feedPosts: FeedPost[];
   status: string;
 }
 
@@ -42,15 +44,15 @@ export const fetchUserFeedPosts = createAsyncThunk(
       followings.map(async (followingId) => {
         return {
           followedUserId: followingId,
-          userInfo: await getUserInfo(followingId),
+          userInfo: (await getUserInfo(followingId)) as UserInfo,
           posts: await getUserPosts(followingId),
         };
       })
     );
 
-    const followedUsersPosts: any[] = [];
+    const followedUsersPosts: FeedPost[] = [];
     followedUsers.forEach((followedUser) => {
-      followedUser.posts.forEach((post: any) => {
+      followedUser.posts.forEach((post: Post) => {
         followedUsersPosts.push({
           post: post,
           userInfo: followedUser.userInfo,
@@ -60,7 +62,7 @@ export const fetchUserFeedPosts = createAsyncThunk(
     });
     console.log(followedUsersPosts);
     return followedUsersPosts.sort((x, y) => {
-      return x.post.creation - y.post.creation;
+      return x.post.creationSeconds - y.post.creationSeconds;
     });
   }
 );
@@ -75,7 +77,7 @@ const feedSlice = createSlice({
     }),
       builder.addCase(fetchUserFeedPosts.fulfilled, (state, { payload }) => {
         state.status = "success";
-        state.feedPosts = payload as any;
+        state.feedPosts = payload;
         console.log(state.feedPosts);
       });
   },

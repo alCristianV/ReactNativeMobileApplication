@@ -2,13 +2,14 @@ import { getDoc, getDocs } from 'firebase/firestore';
 
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
+import { Post } from '../../types/Post';
 import { getUsersDoc } from '../../utils/getUsersDoc';
 import { getUsersPostsDoc } from '../../utils/getUsersPostsDoc';
 import { RootState } from '../store/store';
 
 // Define a type for the slice state
 interface PostsState {
-  posts: any[];
+  posts: Post[];
   status: string;
 }
 
@@ -28,7 +29,7 @@ export const fetchUserPosts = createAsyncThunk(
 export const getUserPosts = async (userId: string) => {
   const usersPostsCollectionRef = getUsersPostsDoc(userId);
   const usersPostsDocsSnap = await getDocs(usersPostsCollectionRef);
-  const posts: any = [];
+  const posts: Post[] = [];
   usersPostsDocsSnap.forEach((doc) => {
     posts.push({
       id: doc.id,
@@ -50,7 +51,7 @@ const postsSlice = createSlice({
     }),
       builder.addCase(fetchUserPosts.fulfilled, (state, { payload }) => {
         state.status = "success";
-        state.posts = payload as any;
+        state.posts = payload;
         console.log(state.posts);
       });
   },

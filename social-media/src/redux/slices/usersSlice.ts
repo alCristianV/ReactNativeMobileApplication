@@ -2,18 +2,19 @@ import { getDoc } from 'firebase/firestore';
 
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
+import { UserInfo } from '../../types/User';
 import { getUsersDoc } from '../../utils/getUsersDoc';
 import { RootState } from '../store/store';
 
 // Define a type for the slice state
 interface UsersState {
-  user: any;
+  user: UserInfo | undefined;
   status: string;
 }
 
 // Define the initial state using that type
 const initialState: UsersState = {
-  user: null,
+  user: undefined,
   status: "",
 };
 
@@ -45,7 +46,8 @@ const userSlice = createSlice({
     }),
       builder.addCase(fetchUser.fulfilled, (state, { payload }) => {
         state.status = "success";
-        state.user = payload as any;
+        console.log(payload);
+        state.user = payload as UserInfo;
         console.log(state.user);
       });
   },
